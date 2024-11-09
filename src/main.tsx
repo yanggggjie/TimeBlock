@@ -6,7 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 const Routes = () => (
   <RouterProvider
-    router={createBrowserRouter(routes, { basename: '/time-block/' })}
+    router={createBrowserRouter(routes, { basename: '/TimeBlock/' })}
   />
 )
 
