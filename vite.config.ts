@@ -4,5 +4,6 @@ import generouted from '@generouted/react-router/plugin'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/time-block/',
   plugins: [react(), generouted()],
 })
