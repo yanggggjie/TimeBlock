@@ -37,7 +37,7 @@ export default function ConfigItem({ blockConfig }: Props) {
           variant={'contained'}
           sx={{
             background: blockConfig.color,
-            width: '200px',
+            width: '100px',
             opacity: hasSelected ? '1' : '0.7',
           }}
         >

@@ -35,7 +35,7 @@ export default function Index({}: Props) {
         <Summary></Summary>
       </div>
       <div
-        className="flex-[2] grid grid-cols-3 gap-[10px] font-mono"
+        className="max-w-[430px] min-w-[430px] flex-[2] grid grid-cols-3 place-items-center gap-y-[8px] font-mono"
         ref={containerRef}
       >
         {blockTypeList.map((blockType, index) => {
@@ -51,7 +51,7 @@ export default function Index({}: Props) {
                 key={`block-${index}`}
                 onClick={() => handleBlockClick(index)} // 添加点击事件
                 className={twMerge(
-                  'w-[120px] h-[30px] block-item cursor-pointer', // 添加 cursor-pointer 提升用户体验
+                  'w-[120px] h-[20px] block-item cursor-pointer', // 添加 cursor-pointer 提升用户体验
                   isSelected && 'ring-4 ring-[#3d74cd]',
                 )}
                 sx={{
