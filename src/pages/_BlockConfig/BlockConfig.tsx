@@ -13,7 +13,7 @@ export default function BlockConfig({}: Props) {
   return (
     <div
       className={twMerge(
-        'fixed top-1/2 -translate-y-1/2 right-0',
+        'fixed top-1/2 -translate-y-1/2 right-3',
         'flex flex-col gap-[10px]',
       )}
     >
@@ -22,6 +22,9 @@ export default function BlockConfig({}: Props) {
         variant={'contained'}
         onClick={() => {
           setOpen(true)
+        }}
+        sx={{
+          backgroundColor: '#6b7280',
         }}
       >
         修改标签
@@ -38,6 +41,9 @@ export default function BlockConfig({}: Props) {
               selectedIndexList: [],
             }
           })
+        }}
+        sx={{
+          backgroundColor: '#6b7280',
         }}
       >
         取消选择

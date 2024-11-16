@@ -7,7 +7,7 @@ interface Props {
 }
 export default function SimplePie({ data }: Props) {
   return (
-    <ResponsiveContainer width={'100%'} height={300}>
+    <ResponsiveContainer width={400} height={400}>
       <PieChart>
         <Pie
           data={data}
@@ -17,13 +17,15 @@ export default function SimplePie({ data }: Props) {
           cy="50%"
           outerRadius={100}
           fill="#8884d8"
-          label={(entry) => `${entry.name}: ${entry.value}小时`}
+          label={(entry) => {
+            return `${entry.name}: ${entry.ratio}%`
+          }}
         >
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={entry.color} />
           ))}
         </Pie>
-        <Tooltip formatter={(value, name) => [`${value} 分钟`, name]} />
+        <Tooltip formatter={(value, name) => [`${value} 小时`, name]} />
       </PieChart>
     </ResponsiveContainer>
   )

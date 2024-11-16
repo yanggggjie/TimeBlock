@@ -6,8 +6,10 @@ import SimplePie from './SimplePie.tsx'
 interface Props {}
 export interface IChartDataItem {
   value: number
+  ratio: number
   name: string
   color: string
+  type: IBlockType
 }
 export default function Summary({}: Props) {
   const { blockTypeList, blockConfigList } = useTimeBlockStore()
@@ -22,7 +24,7 @@ export default function Summary({}: Props) {
     ([type, count]) => ({ type, count }),
   )
 
-  const chartData = blockTypeCount.map((item) => {
+  const chartData: IChartDataItem[] = blockTypeCount.map((item) => {
     const itemConfig = blockConfigList.find((it) => {
       return item.type === it.type
     })!
@@ -31,28 +33,14 @@ export default function Summary({}: Props) {
       name: itemConfig.title,
       color: itemConfig.color,
       type: itemConfig.type,
+      ratio: parseFloat(((item.count / 48) * 100).toFixed(0)),
     }
   })
-
-  const gray = chartData.find((item) => {
-    return item.type === 'gray'
-  })!
-  const chartDataWithGray = chartData.filter((item) => {
-    return item.type !== 'gray'
-  })
-
-  const sortedData = chartDataWithGray
-    .sort((a, b) => {
-      return b.value - a.value
-    })
-    .concat(gray)
-
-  console.log(sortedData)
 
   return (
     <div className={twMerge('fixed top-1/2 -translate-y-1/2 left-0 w-[400px]')}>
       <SimplePie data={chartData}></SimplePie>
-      <HorizonBar data={sortedData}></HorizonBar>
+      <HorizonBar data={chartData}></HorizonBar>
     </div>
   )
 }

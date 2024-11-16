@@ -1,28 +1,17 @@
 // 引入 dayjs 库
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
-import { IBlockType, useTimeBlockStore } from '../store/useTimeBlock.ts'
+import {
+  IBlockConfig,
+  IBlockType,
+  useTimeBlockStore,
+} from '../store/useTimeBlock.ts'
 dayjs.extend(duration)
-
-export function convertMinutesToHoursMinutes(minutes: number) {
-  const time = dayjs.duration(minutes, 'minutes')
-  const hours = Math.floor(time.asHours())
-  const mins = time.minutes()
-  return `${hours}小时${mins}分`
-}
 
 export function blockType2Config(type: IBlockType) {
   return useTimeBlockStore.getState().blockConfigList.find((item) => {
     return item.type === type
   })!
-}
-
-export function addSelectedIndexList(list: number[]) {
-  useTimeBlockStore.setState(({ selectedIndexList }) => {
-    return {
-      selectedIndexList: [...new Set([...selectedIndexList, ...list])],
-    }
-  })
 }
 
 export function toggleSelectedIndexList(list: number[]) {
@@ -43,4 +32,34 @@ export function toggleSelectedIndexList(list: number[]) {
 
     return { selectedIndexList: updatedList }
   })
+}
+
+interface ICurrentTime {
+  nowIndex: number
+  nowRatio: number
+}
+export function getCurrentTime(): ICurrentTime {
+  // 获取当前时间
+  const now = dayjs()
+
+  // 获取当天零点的时间
+  const startOfDay = now.startOf('day')
+
+  // 计算从当天零点到当前时间的分钟数
+  const minutesSinceStartOfDay = now.diff(startOfDay, 'minute')
+
+  // 计算当前是第几个完整的半小时（整数部分）
+  const nowIndex = Math.floor(minutesSinceStartOfDay / 30)
+
+  // 计算当前半小时的小数百分比
+  const nowRatio = parseFloat(((minutesSinceStartOfDay % 30) / 30).toFixed(1))
+
+  return { nowIndex, nowRatio }
+}
+
+export function getCurrentBlockConfig(): IBlockConfig {
+  const { blockTypeList, blockConfigList } = useTimeBlockStore.getState()
+  const { nowIndex } = getCurrentTime()
+  const blockType = blockTypeList[nowIndex]
+  return blockConfigList.find((item) => item.type === blockType)!
 }

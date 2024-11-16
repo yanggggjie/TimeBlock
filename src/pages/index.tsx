@@ -1,72 +1,84 @@
-import React, { useRef } from 'react'
-import { twMerge } from 'tailwind-merge'
-import { useTimeBlockStore } from '../store/useTimeBlock.ts'
+import React, { useEffect, useState } from 'react'
 import BlockConfig from './_BlockConfig/BlockConfig.tsx'
 import Summary from './_Summary/Summary.tsx'
-import { Button } from '@mui/material'
-import Time from './Block/Time.tsx'
+import TimeBlock from './_TimeBlock/TimeBlock.tsx'
+import { getCurrentBlockConfig } from './util.ts'
+import dayjs from 'dayjs'
+import { useTimeBlockStore } from '../store/useTimeBlock.ts'
+import { FormControlLabel, Switch } from '@mui/material'
+import { twMerge } from 'tailwind-merge'
 
 interface Props {}
 
 export default function Index({}: Props) {
-  const { blockTypeList, selectedIndexList, blockConfigList } =
-    useTimeBlockStore()
-  const containerRef = useRef<HTMLDivElement | null>(null)
+  const [showSummary, setShowSummary] = useState(true)
+  const { blockTypeList } = useTimeBlockStore()
+  const currentBlockConfig = getCurrentBlockConfig()
+  const [currentTimeHHmm, setCurrentTimeHHmm] = useState(
+    dayjs().format('HH:mm'),
+  )
 
-  const handleBlockClick = (index: number) => {
-    useTimeBlockStore.setState(({ selectedIndexList }) => {
-      if (selectedIndexList.includes(index)) {
-        return {
-          selectedIndexList: selectedIndexList.filter((item) => {
-            return item !== index
-          }),
-        }
-      }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTimeHHmm(dayjs().format('HH:mm'))
+    }, 1000)
 
-      return {
-        selectedIndexList: [...selectedIndexList, index],
-      }
-    })
-  }
+    return () => {
+      clearInterval(interval)
+    }
+  }, [currentTimeHHmm, blockTypeList])
 
   return (
-    <div className="flex flex-row items-center">
-      <div className={'flex-[2]'}>
-        <Summary></Summary>
-      </div>
-      <div
-        className="max-w-[430px] min-w-[430px] flex-[2] grid grid-cols-3 place-items-center gap-y-[8px] font-mono"
-        ref={containerRef}
-      >
-        {blockTypeList.map((blockType, index) => {
-          const config = blockConfigList.find((item) => {
-            return item.type === blockType
-          })!
-          const isSelected = selectedIndexList.includes(index)
-
-          return (
-            <React.Fragment key={index}>
-              <Time index={index}></Time>
-              <Button
-                key={`block-${index}`}
-                onClick={() => handleBlockClick(index)} // 添加点击事件
-                className={twMerge(
-                  'w-[120px] h-[20px] block-item cursor-pointer', // 添加 cursor-pointer 提升用户体验
-                  isSelected && 'ring-4 ring-[#3d74cd]',
-                )}
-                sx={{
-                  borderRadius: 0,
-                }}
+    <div className={'h-screen w-screen overflow-y-auto'}>
+      <div className="relative h-full flex flex-row items-center">
+        <div className={'fixed top-0 left-0 z-20'}>
+          <FormControlLabel
+            control={
+              <Switch
+                value={showSummary}
+                onChange={(e) => setShowSummary(e.target.checked)}
+                defaultChecked
+              />
+            }
+            label="显示统计"
+          />
+        </div>
+        {showSummary && (
+          <div className={'w-[400px]'}>
+            <Summary></Summary>
+          </div>
+        )}
+        <div className="flex-[2] h-full flex flex-col">
+          <div className={'flex flex-row py-[4px]'}>
+            <div className={'w-[128px]'}></div>
+            <div className={'flex-1 flex flex-row items-center justify-center'}>
+              现在是
+              <div className={'font-mono'}>{currentTimeHHmm}</div>
+              <div
+                className={'text-white font-bold px-[10px] rounded mx-[2px]'}
                 style={{
-                  background: config.color,
+                  background: currentBlockConfig.color,
+                  color: 'white',
                 }}
-              ></Button>
-            </React.Fragment>
-          )
-        })}
-      </div>
-      <div className={'flex-1'}>
-        <BlockConfig></BlockConfig>
+              >
+                {currentBlockConfig.title}
+              </div>
+              时间
+            </div>
+          </div>
+
+          <div
+            className={twMerge(
+              'grid grid-cols-[130px_1fr_1fr]  gap-x-[10px] gap-y-[5px] place-items-center font-mono',
+              'flex-1 grid-rows-[repeat(auto-fill, 1fr)]',
+            )}
+          >
+            <TimeBlock></TimeBlock>
+          </div>
+        </div>
+        <div className={'w-[130px]'}>
+          <BlockConfig></BlockConfig>
+        </div>
       </div>
     </div>
   )

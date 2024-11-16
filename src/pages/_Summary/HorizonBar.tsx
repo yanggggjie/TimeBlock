@@ -15,7 +15,7 @@ interface Props {
 }
 export default function HorizonBar({ data }: Props) {
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width={400} height={400}>
       <BarChart
         data={data}
         layout="vertical"
@@ -24,7 +24,7 @@ export default function HorizonBar({ data }: Props) {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis type="number" />
         <YAxis dataKey="name" type="category" />
-        <Tooltip formatter={(value, name) => [`${value} 分钟`, '时长']} />
+        <Tooltip formatter={(value, name) => [`${value} 小时`, '时长']} />
         <Bar dataKey="value" barSize={20}>
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={entry.color} />
